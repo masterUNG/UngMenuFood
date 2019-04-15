@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert';
 
 class Register extends StatefulWidget {
   @override
@@ -10,17 +12,17 @@ class _RegisterState extends State<Register> {
   final formKey = GlobalKey<FormState>();
   String name, user, password;
 
-  Widget uploadIcon() {
+  Widget uploadIcon(BuildContext context) {
     return IconButton(
       icon: Icon(Icons.cloud_upload),
       onPressed: () {
         print('You Click Upload');
-        uploadValueToServer();
+        uploadValueToServer(context);
       },
     );
   }
 
-  void uploadValueToServer() {
+  void uploadValueToServer(BuildContext context) async{
     print(formKey.currentState.validate());
 
     if (formKey.currentState.validate()) {
@@ -29,6 +31,13 @@ class _RegisterState extends State<Register> {
       String urlPHP = 'https://www.androidthai.in.th/note/addUserMaster.php?isAdd=true&Name=$name&User=$user&Password=$password';
       print(urlPHP);
 
+      var response = await get(urlPHP);
+      var result = json.decode(response.body);
+      print('result ==>>> $result');
+
+      if (result.toString() == 'true') {
+        Navigator.pop(context);
+      }
 
     } // if
   } // upload
@@ -86,7 +95,7 @@ class _RegisterState extends State<Register> {
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           title: Text('Register'),
-          actions: <Widget>[uploadIcon()],
+          actions: <Widget>[uploadIcon(context)],
         ),
         body: Form(
           key: formKey,
