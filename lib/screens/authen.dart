@@ -10,6 +10,8 @@ class _AuthenState extends State<Authen> {
   // Explicit
   String titleUser = 'ลงชื่อผู้ใช้งาน :';
   String hintUser = 'กรุณากรอก ชื่อผู้ใช้งาน';
+  String user, password;
+  final formKey = GlobalKey<FormState>();
 
   // Show Logo
   Widget showLogo() {
@@ -32,6 +34,14 @@ class _AuthenState extends State<Authen> {
           labelText: titleUser,
           hintText: hintUser,
           labelStyle: TextStyle(fontSize: 25.0, color: Colors.white)),
+      validator: (String value) {
+        if (value.length == 0) {
+          return 'Have Space';
+        }
+      },
+      onSaved: (String value) {
+        user = value;
+      },
     );
   }
 
@@ -42,6 +52,14 @@ class _AuthenState extends State<Authen> {
           labelText: 'Password :',
           hintText: 'More 6 Charactor',
           labelStyle: TextStyle(fontSize: 25.0, color: Colors.white)),
+      validator: (String value) {
+        if (value.length == 0) {
+          return 'Have Space';
+        }
+      },
+      onSaved: (String value) {
+        password = value;
+      },
     );
   }
 
@@ -55,8 +73,20 @@ class _AuthenState extends State<Authen> {
         'Sign In',
         style: TextStyle(color: Colors.white),
       ),
-      onPressed: () {},
+      onPressed: () {
+        print('You Click SignIn');
+        checkAuthen();
+      },
     );
+  }
+
+  void checkAuthen() {
+    if (formKey.currentState.validate()) {
+      formKey.currentState.save();
+
+      String urlJSON = 'https://www.androidthai.in.th/note/getUserWhereUserMaster.php?isAdd=true&User=$user';
+      print(urlJSON);
+    }
   }
 
   //  SignUp
@@ -78,54 +108,57 @@ class _AuthenState extends State<Authen> {
   void goToRegister(BuildContext context) {
     var routeRegister =
         new MaterialPageRoute(builder: (BuildContext context) => Register());
-        Navigator.of(context).push(routeRegister);
+    Navigator.of(context).push(routeRegister);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Colors.orangeAccent[700], Colors.orangeAccent[100]],
-                begin: Alignment(-1, -1))),
-        padding: EdgeInsets.only(top: 100.0),
-        alignment: Alignment.topCenter,
-        child: Column(
-          children: <Widget>[
-            showLogo(),
-            Container(
-              margin: EdgeInsets.only(top: 30.0),
-              child: showAppName(),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 50.0, right: 50.0),
-              child: userTextFormField(),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 50.0, right: 50.0),
-              child: passwordTextFormField(),
-            ),
-            Container(
-              child: Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: signInButton(),
+        resizeToAvoidBottomPadding: false,
+        body: Form(
+          key: formKey,
+          child: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+              Colors.orangeAccent[700],
+              Colors.orangeAccent[100]
+            ], begin: Alignment(-1, -1))),
+            padding: EdgeInsets.only(top: 100.0),
+            alignment: Alignment.topCenter,
+            child: Column(
+              children: <Widget>[
+                showLogo(),
+                Container(
+                  margin: EdgeInsets.only(top: 30.0),
+                  child: showAppName(),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 50.0, right: 50.0),
+                  child: userTextFormField(),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 50.0, right: 50.0),
+                  child: passwordTextFormField(),
+                ),
+                Container(
+                  child: Row(
+                    children: <Widget>[
+                      new Expanded(
+                        child: signInButton(),
+                      ),
+                      new Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5.0),
+                          child: signUpButton(context),
+                        ),
+                      )
+                    ],
                   ),
-                  new Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5.0),
-                      child: signUpButton(context),
-                    ),
-                  )
-                ],
-              ),
-              margin: EdgeInsets.only(left: 50.0, right: 50.0, top: 15.0),
-            )
-          ],
-        ),
-      ),
-    );
+                  margin: EdgeInsets.only(left: 50.0, right: 50.0, top: 15.0),
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }
